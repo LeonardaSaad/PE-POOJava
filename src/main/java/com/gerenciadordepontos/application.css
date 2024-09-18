@@ -43,4 +43,9 @@
 	-fx-pref-width: 100%;
 	-fx-background-color: #000;
 	-fx-text-fill: white;
+	-fx-cursor: hand;
+}
+
+.button:hover {
+	-fx-background-color: #181818;
 }

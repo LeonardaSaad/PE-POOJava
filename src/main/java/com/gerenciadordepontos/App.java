@@ -1,5 +1,10 @@
 package com.gerenciadordepontos;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -9,11 +14,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * JavaFX App
@@ -73,6 +73,7 @@ public class App extends Application {
                     alert.setTitle("Concluído");
                     alert.setHeaderText(null);
                     alert.setContentText("Ponto Registrado com Sucesso!");
+                    alert.getDialogPane().getStylesheets().add(getClass().getResource("alert-confirm-styles.css").toExternalForm());
                     alert.showAndWait();
                 }
             }
@@ -82,6 +83,7 @@ public class App extends Application {
             alert.setTitle("Mensagem de erro");
             alert.setHeaderText("Ocorreu um erro!");
             alert.setContentText("Erro ao salvar: " + ex.getMessage());
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("alert-error-styles.css").toExternalForm());
             alert.showAndWait();
         } catch (NumberFormatException ex) {
             // Show error message
@@ -89,6 +91,7 @@ public class App extends Application {
             alert.setTitle("Mensagem de erro");
             alert.setHeaderText("Ocorreu um erro!");
             alert.setContentText("Erro: " + ex.getMessage());
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("alert-error-styles.css").toExternalForm());
             alert.showAndWait();
         } catch (ClassNotFoundException e) {
             // Handle the exception
