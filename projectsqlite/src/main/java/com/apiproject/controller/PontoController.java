@@ -3,6 +3,7 @@ package com.apiproject.controller;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,45 +24,58 @@ import com.apiproject.project.PontoRepository;
 @RequestMapping("/registro_ponto")
 public class PontoController {
 
-    @Autowired
-    private PontoRepository pontoRepository;
+	@Autowired
+	private PontoRepository pontoRepository;
 
-    @Autowired
-    private FuncionarioRepository funcionarioRepository; // Para buscar o funcionário
+	@Autowired
+	private FuncionarioRepository funcionarioRepository; // Para buscar o funcionário
 
-    @GetMapping
-    public List<Ponto> getAllPontos() {
-        return pontoRepository.findAll();
-    }
+	@GetMapping
+	public List<Ponto> getAllPontos() {
+		List<Ponto> pontoList = pontoRepository.findAll();
 
-    @PostMapping
-    public Ponto createPonto(@RequestBody Map<String, Object> request) {
-        String funcionarioIdStr = (String) request.get("funcionario_id"); // Mude para String
-        Integer funcionarioId = Integer.parseInt(funcionarioIdStr); // Converta para Integer
-        String tipo = (String) request.get("tipo");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-        // Busca o funcionário pelo ID
-        Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+		for (Ponto ponto : pontoList) {
+			if (ponto.getEntrada_ponto() != null) {
+				ponto.setData_entrada_converted(ponto.getEntrada_ponto().format(formatter));
+			}
 
-        // Cria uma nova instância de Ponto
-        Ponto ponto = new Ponto();
-        ponto.setFuncionario(funcionario);
+			if (ponto.getSaida_ponto() != null) {
+				ponto.setData_saida_converted(ponto.getSaida_ponto().format(formatter));
+			}
+		}
 
-        // Define a entrada ou saída de acordo com o tipo
-        if ("entrada".equals(tipo)) {
-            ponto.setEntrada_ponto(LocalDateTime.now()); // Define a entrada
-        } else if ("saida".equals(tipo)) {
-            ponto.setSaida_ponto(LocalDateTime.now()); // Define a saída
-        } else {
-            throw new RuntimeException("Tipo inválido"); // Adiciona uma verificação para tipo
-        }
+		return pontoList;
+	}
 
-        return pontoRepository.save(ponto);
-    }
+	@PostMapping
+	public Ponto createPonto(@RequestBody Map<String, Object> request) {
+		String funcionarioId = (String) request.get("funcionario_id"); // Mude para String
+		String tipo = (String) request.get("tipo");
 
-    @PutMapping
-    public Ponto editPonto(@RequestBody Ponto ponto) {
-        return pontoRepository.save(ponto);
-    }
+		// Busca o funcionário pelo ID
+		Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
+				.orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+
+		// Cria uma nova instância de Ponto
+		Ponto ponto = new Ponto();
+		ponto.setFuncionario(funcionario);
+
+		// Define a entrada ou saída de acordo com o tipo
+		if ("entrada".equals(tipo)) {
+			ponto.setEntrada_ponto(LocalDateTime.now()); // Define a entrada
+		}
+
+		if ("saida".equals(tipo)) {
+			ponto.setSaida_ponto(LocalDateTime.now()); // Define a saída
+		}
+
+		return pontoRepository.save(ponto);
+	}
+
+	@PutMapping
+	public Ponto editPonto(@RequestBody Ponto ponto) {
+		return pontoRepository.save(ponto);
+	}
 }
