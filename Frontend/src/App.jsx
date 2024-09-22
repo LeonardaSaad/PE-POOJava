@@ -2,34 +2,33 @@ import { useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
-export default function Component() {
-  const [matricula, setMatricula] = useState("");
-  const [nome, setNome] = useState("");
+export default function App() {
+  const [funcionarioId, setFuncionarioId] = useState("");
+  const [funcionarioName, setFuncionarioName] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aqui você pode adicionar a lógica para enviar os dados para o seu sistema de ponto
-    console.log("Dados submetidos:", { matricula, nome });
-    // Limpar os campos após o envio
-    setMatricula("");
-    setNome("");
+    console.log({
+      "Funcionario Id": funcionarioId,
+      "Funcionário Nome": funcionarioName,
+    });
   };
 
   return (
     <>
-      <h1>CHD Ponto Digital</h1>
+      <h1 className="font-bold text-center m-10 text-2xl">CHD Ponto Digital</h1>
       <Tabs defaultValue="point-record" className="w-[400px]">
-        <TabsList>
+        <TabsList className="flex justify-center space-x-2">
           <TabsTrigger value="point-record">Registro de Ponto</TabsTrigger>
           <TabsTrigger value="register-user">
             Cadastro de Funcionários
@@ -40,28 +39,18 @@ export default function Component() {
             <CardHeader>
               <CardTitle>Registro de Ponto</CardTitle>
               <CardDescription>
-                Insira seu id e nome para registrar o ponto
+                Insira seu ID para registrar o ponto
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="matricula">ID</Label>
+                  <Label htmlFor="funcionarioId">ID do Funcionário</Label>
                   <Input
-                    id="matricula"
-                    placeholder="Digite sua matrícula"
-                    value={matricula}
-                    onChange={(e) => setMatricula(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="nome">Nome do Funcionário</Label>
-                  <Input
-                    id="nome"
-                    placeholder="Digite seu nome completo"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
+                    id="funcionarioId"
+                    placeholder="Digite seu ID"
+                    value={funcionarioId}
+                    onChange={(e) => setFuncionarioId(e.target.value)}
                     required
                   />
                 </div>
@@ -80,7 +69,7 @@ export default function Component() {
             <CardHeader>
               <CardTitle>Cadastro de Funcionários</CardTitle>
               <CardDescription>
-                Insira o nome do funcionário que deseja cadastrar.
+                Insira nome completo do funcionário que deseja cadastrar.
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
@@ -90,15 +79,15 @@ export default function Component() {
                   <Input
                     id="nome"
                     placeholder="Digite seu nome completo"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
+                    value={funcionarioName}
+                    onChange={(e) => setFuncionarioName(e.target.value)}
                     required
                   />
                 </div>
               </CardContent>
               <CardFooter>
                 <Button type="submit" className="w-full">
-                  Registrar Ponto
+                  Cadastrar funcionário
                 </Button>
               </CardFooter>
             </form>
