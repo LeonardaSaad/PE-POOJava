@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import AlertDialogComponent from "./components/AlertDialogComponent";
 
 export default function App() {
   const [funcionarioId, setFuncionarioId] = useState("");
@@ -56,9 +57,7 @@ export default function App() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full">
-                  Registrar Ponto
-                </Button>
+                <AlertDialogComponent />
               </CardFooter>
             </form>
           </Card>
