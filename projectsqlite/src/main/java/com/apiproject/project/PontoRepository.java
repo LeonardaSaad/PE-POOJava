@@ -7,4 +7,5 @@ import com.apiproject.model.Funcionario;
 
 public interface PontoRepository extends JpaRepository<Ponto, Integer> {
   Ponto findByFuncionarioAndSaidaPontoIsNull(Funcionario funcionario);
+  Ponto findTopByFuncionarioOrderByPontoIdDesc(Funcionario funcionario);
 }

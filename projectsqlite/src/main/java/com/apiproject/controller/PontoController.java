@@ -56,6 +56,8 @@ public class PontoController {
 	public ResponseEntity<ResponseMessage> createPonto(@RequestBody Map<String, Object> request) {
 		String funcionarioId = (String) request.get("funcionario_id");
 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
 		// Busca o funcionário pelo ID
 		Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
 				.orElse(null);
@@ -63,7 +65,7 @@ public class PontoController {
 		if (funcionario == null) {
 			// Se o funcionário não for encontrado, retorna um status 404 com mensagem
 			return new ResponseEntity<ResponseMessage>(
-					new ResponseMessage(false, "Funcionário não encontrado"),
+					new ResponseMessage(false, "Funcionário não encontrado", null, null),
 					HttpStatus.NOT_FOUND);
 		}
 
@@ -75,7 +77,8 @@ public class PontoController {
 			pontoExistente.setSaidaPonto(LocalDateTime.now());
 			pontoRepository.save(pontoExistente);
 			return new ResponseEntity<ResponseMessage>(
-					new ResponseMessage(true, "Saída registrada com sucesso"),
+					new ResponseMessage(true, "Saída registrada com sucesso", funcionario.getFuncionario_id(), 
+					LocalDateTime.now().format(formatter)),
 					HttpStatus.OK);
 		} else {
 			// Se não existe um ponto em aberto, cria um novo registro de entrada
@@ -84,7 +87,8 @@ public class PontoController {
 			novoPonto.setEntradaPonto(LocalDateTime.now());
 			pontoRepository.save(novoPonto);
 			return new ResponseEntity<ResponseMessage>(
-					new ResponseMessage(true, "Entrada registrada com sucesso"),
+					new ResponseMessage(true, "Entrada registrada com sucesso", funcionario.getFuncionario_id(), 
+					LocalDateTime.now().format(formatter)),
 					HttpStatus.CREATED);
 		}
 	}

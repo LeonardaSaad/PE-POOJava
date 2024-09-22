@@ -39,13 +39,13 @@ public class FuncionarioController {
 
 		if (existingFuncionario.isPresent()) {
 			// Retorna status 400 com mensagem de erro
-			ResponseMessage response = new ResponseMessage(false, "Nome já existente");
+			ResponseMessage response = new ResponseMessage(false, "Nome já existente", null, null);
 			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		}
 
-		funcionarioRepository.save(funcionario);
+		Funcionario savedFuncionario = funcionarioRepository.save(funcionario);
 		// Retorna status 201 com mensagem de sucesso
-		ResponseMessage response = new ResponseMessage(true, "Funcionário criado com sucesso");
+		ResponseMessage response = new ResponseMessage(true, "Funcionário criado com sucesso", savedFuncionario.getFuncionario_id(), null);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
@@ -55,12 +55,12 @@ public class FuncionarioController {
 			funcionarioRepository.save(funcionario);
 			// Retorna status 200 com mensagem de sucesso
 			return new ResponseEntity<ResponseMessage>(
-				new ResponseMessage(true, "Funcionário atualizado com sucesso"),
+				new ResponseMessage(true, "Funcionário atualizado com sucesso", null, null),
 				HttpStatus.OK);
 		} else {
 			// Retorna status 404 com mensagem de erro
 			return new ResponseEntity<ResponseMessage>(
-				new ResponseMessage(false, "Funcionário não encontrado"),
+				new ResponseMessage(false, "Funcionário não encontrado", null, null),
 				HttpStatus.NOT_FOUND);
 		}
 	}
@@ -72,11 +72,11 @@ public class FuncionarioController {
 		if (funcionario.isPresent()) {
 			funcionarioRepository.deleteById(id);
 			// Retorna status 200 com mensagem de sucesso
-			ResponseMessage response = new ResponseMessage(true, "Funcionário deletado com sucesso");
+			ResponseMessage response = new ResponseMessage(true, "Funcionário deletado com sucesso", null, null);
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} else {
 			// Retorna status 404 com mensagem de erro
-			ResponseMessage response = new ResponseMessage(false, "Funcionário não encontrado");
+			ResponseMessage response = new ResponseMessage(false, "Funcionário não encontrado", null, null);
 			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 	}
