@@ -21,7 +21,7 @@ export default function Component() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Registro de Ponto</CardTitle>
-        <CardDescription>Insira sua matrícula e nome para registrar o ponto</CardDescription>
+        <CardDescription>Insira seu id e nome para registrar o ponto</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
