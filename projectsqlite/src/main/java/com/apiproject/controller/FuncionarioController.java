@@ -23,34 +23,41 @@ import com.apiproject.project.FuncionarioRepository;
 @CrossOrigin("*")
 @RequestMapping("/funcionarios")
 public class FuncionarioController {
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
+	@Autowired
+	private FuncionarioRepository funcionarioRepository;
 
-    @GetMapping
-    public List<Funcionario> getAllFuncionarios() {
-        return funcionarioRepository.findAll();
-    }
+	@GetMapping
+	public List<Funcionario> getAllFuncionarios() {
+		return funcionarioRepository.findAll();
+	}
 
-    @PostMapping
-    public Funcionario createFuncionario(@RequestBody Funcionario funcionario) {
-        return funcionarioRepository.save(funcionario);
-    }
+	@PostMapping
+	public ResponseEntity<String> createFuncionario(@RequestBody Funcionario funcionario) {
+		Optional<Funcionario> existingFuncionario = funcionarioRepository.findByName(funcionario.getName());
 
-    @PutMapping
-    public Funcionario editFuncionario(@RequestBody Funcionario funcionario) {
-        return funcionarioRepository.save(funcionario);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFuncionario(@PathVariable Integer id) {
-        Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
-
-        if (funcionario.isPresent()) {
-            funcionarioRepository.deleteById(id);
-            return ResponseEntity.ok("Funcionário deletado com sucesso");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+        if (existingFuncionario.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome já existente");
         }
-    }
+
+        funcionarioRepository.save(funcionario);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Funcionário criado com sucesso");
+	}
+
+	@PutMapping
+	public Funcionario editFuncionario(@RequestBody Funcionario funcionario) {
+		return funcionarioRepository.save(funcionario);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteFuncionario(@PathVariable String id) {
+		Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
+
+		if (funcionario.isPresent()) {
+			funcionarioRepository.deleteById(id);
+			return ResponseEntity.ok("Funcionário deletado com sucesso");
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+		}
+	}
 
 }
