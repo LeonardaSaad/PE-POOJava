@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apiproject.model.Funcionario;
 import com.apiproject.project.FuncionarioRepository;
+import com.apiproject.response.ResponseMessage;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/funcionarios")
 public class FuncionarioController {
+
 	@Autowired
 	private FuncionarioRepository funcionarioRepository;
 
@@ -32,32 +34,50 @@ public class FuncionarioController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createFuncionario(@RequestBody Funcionario funcionario) {
+	public ResponseEntity<ResponseMessage> createFuncionario(@RequestBody Funcionario funcionario) {
 		Optional<Funcionario> existingFuncionario = funcionarioRepository.findByName(funcionario.getName());
 
-        if (existingFuncionario.isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nome já existente");
-        }
+		if (existingFuncionario.isPresent()) {
+			// Retorna status 400 com mensagem de erro
+			ResponseMessage response = new ResponseMessage(false, "Nome já existente");
+			return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		}
 
-        funcionarioRepository.save(funcionario);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Funcionário criado com sucesso");
+		funcionarioRepository.save(funcionario);
+		// Retorna status 201 com mensagem de sucesso
+		ResponseMessage response = new ResponseMessage(true, "Funcionário criado com sucesso");
+		return new ResponseEntity<>(response, HttpStatus.CREATED);
 	}
 
 	@PutMapping
-	public Funcionario editFuncionario(@RequestBody Funcionario funcionario) {
-		return funcionarioRepository.save(funcionario);
+	public ResponseEntity<ResponseMessage> editFuncionario(@RequestBody Funcionario funcionario) {
+		if (funcionarioRepository.existsById(funcionario.getFuncionario_id())) {
+			funcionarioRepository.save(funcionario);
+			// Retorna status 200 com mensagem de sucesso
+			return new ResponseEntity<ResponseMessage>(
+				new ResponseMessage(true, "Funcionário atualizado com sucesso"),
+				HttpStatus.OK);
+		} else {
+			// Retorna status 404 com mensagem de erro
+			return new ResponseEntity<ResponseMessage>(
+				new ResponseMessage(false, "Funcionário não encontrado"),
+				HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteFuncionario(@PathVariable String id) {
+	public ResponseEntity<ResponseMessage> deleteFuncionario(@PathVariable String id) {
 		Optional<Funcionario> funcionario = funcionarioRepository.findById(id);
 
 		if (funcionario.isPresent()) {
 			funcionarioRepository.deleteById(id);
-			return ResponseEntity.ok("Funcionário deletado com sucesso");
+			// Retorna status 200 com mensagem de sucesso
+			ResponseMessage response = new ResponseMessage(true, "Funcionário deletado com sucesso");
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado");
+			// Retorna status 404 com mensagem de erro
+			ResponseMessage response = new ResponseMessage(false, "Funcionário não encontrado");
+			return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 		}
 	}
-
 }

@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import com.apiproject.model.Funcionario;
 import com.apiproject.model.Ponto;
 import com.apiproject.project.FuncionarioRepository;
 import com.apiproject.project.PontoRepository;
+import com.apiproject.response.ResponseMessage;
 
 @RestController
 @CrossOrigin("*")
@@ -37,12 +40,12 @@ public class PontoController {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 		for (Ponto ponto : pontoList) {
-			if (ponto.getEntrada_ponto() != null) {
-				ponto.setData_entrada_converted(ponto.getEntrada_ponto().format(formatter));
+			if (ponto.getEntradaPonto() != null) {
+				ponto.setDataEntradaConverted(ponto.getEntradaPonto().format(formatter));
 			}
 
-			if (ponto.getSaida_ponto() != null) {
-				ponto.setData_saida_converted(ponto.getSaida_ponto().format(formatter));
+			if (ponto.getSaidaPonto() != null) {
+				ponto.setDataSaidaConverted(ponto.getSaidaPonto().format(formatter));
 			}
 		}
 
@@ -50,28 +53,40 @@ public class PontoController {
 	}
 
 	@PostMapping
-	public Ponto createPonto(@RequestBody Map<String, Object> request) {
-		String funcionarioId = (String) request.get("funcionario_id"); // Mude para String
-		String tipo = (String) request.get("tipo");
+	public ResponseEntity<ResponseMessage> createPonto(@RequestBody Map<String, Object> request) {
+		String funcionarioId = (String) request.get("funcionario_id");
 
 		// Busca o funcionário pelo ID
 		Funcionario funcionario = funcionarioRepository.findById(funcionarioId)
-				.orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+				.orElse(null);
 
-		// Cria uma nova instância de Ponto
-		Ponto ponto = new Ponto();
-		ponto.setFuncionario(funcionario);
-
-		// Define a entrada ou saída de acordo com o tipo
-		if ("entrada".equals(tipo)) {
-			ponto.setEntrada_ponto(LocalDateTime.now()); // Define a entrada
+		if (funcionario == null) {
+			// Se o funcionário não for encontrado, retorna um status 404 com mensagem
+			return new ResponseEntity<ResponseMessage>(
+					new ResponseMessage(false, "Funcionário não encontrado"),
+					HttpStatus.NOT_FOUND);
 		}
 
-		if ("saida".equals(tipo)) {
-			ponto.setSaida_ponto(LocalDateTime.now()); // Define a saída
-		}
+		// Verifica se existe um ponto sem saída registrado para o funcionário
+		Ponto pontoExistente = pontoRepository.findByFuncionarioAndSaidaPontoIsNull(funcionario);
 
-		return pontoRepository.save(ponto);
+		if (pontoExistente != null) {
+			// Se existe um ponto sem saída, atualiza com a data e hora de saída
+			pontoExistente.setSaidaPonto(LocalDateTime.now());
+			pontoRepository.save(pontoExistente);
+			return new ResponseEntity<ResponseMessage>(
+					new ResponseMessage(true, "Saída registrada com sucesso"),
+					HttpStatus.OK);
+		} else {
+			// Se não existe um ponto em aberto, cria um novo registro de entrada
+			Ponto novoPonto = new Ponto();
+			novoPonto.setFuncionario(funcionario);
+			novoPonto.setEntradaPonto(LocalDateTime.now());
+			pontoRepository.save(novoPonto);
+			return new ResponseEntity<ResponseMessage>(
+					new ResponseMessage(true, "Entrada registrada com sucesso"),
+					HttpStatus.CREATED);
+		}
 	}
 
 	@PutMapping

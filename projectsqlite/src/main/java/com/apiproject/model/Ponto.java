@@ -17,90 +17,84 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "registro_ponto")
 public class Ponto {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ponto_id")
-	private Integer ponto_id;
+	private Integer pontoId;
 
 	@ManyToOne
 	@JoinColumn(name = "funcionario_id", referencedColumnName = "funcionario_id", nullable = true)
-	private Funcionario funcionario_id;
+	private Funcionario funcionario; // Renomeado para 'funcionario'
 
 	@Column(name = "entrada_ponto", nullable = true)
-	private LocalDateTime entrada_ponto;
+	private LocalDateTime entradaPonto; // Renomeado para 'entradaPonto'
 
 	@Column(name = "saida_ponto", nullable = true)
-	private LocalDateTime saida_ponto;
+	private LocalDateTime saidaPonto; // Renomeado para 'saidaPonto'
+
+	@Transient
+	private String dataEntradaConverted; // Renomeado para 'dataEntradaConverted'
+
+	@Transient
+	private String dataSaidaConverted; // Renomeado para 'dataSaidaConverted'
 
 	@PrePersist
 	protected void onCreate() {
-		entrada_ponto = LocalDateTime.now(); // Define a data/hora atual na entrada
+		entradaPonto = LocalDateTime.now(); // Define a data/hora atual na entrada
 	}
 
 	@PreUpdate
 	protected void onUpdate() {
-		saida_ponto = LocalDateTime.now(); // Define a data/hora atual na saída ao atualizar
+		saidaPonto = LocalDateTime.now(); // Define a data/hora atual na saída ao atualizar
 	}
 
-	public Integer getPonto_id() {
-		return ponto_id;
+	// Getters e Setters
+	public Integer getPontoId() {
+		return pontoId;
 	}
 
-	public void setPonto_id(Integer ponto_id) {
-		this.ponto_id = ponto_id;
+	public void setPontoId(Integer pontoId) {
+		this.pontoId = pontoId;
 	}
 
 	public Funcionario getFuncionario() {
-		return funcionario_id;
+		return funcionario;
 	}
 
-	public void setFuncionario(Funcionario funcionario_id) {
-		this.funcionario_id = funcionario_id;
+	public void setFuncionario(Funcionario funcionario) {
+		this.funcionario = funcionario;
 	}
 
-	public LocalDateTime getEntrada_ponto() {
-		return entrada_ponto;
+	public LocalDateTime getEntradaPonto() {
+		return entradaPonto;
 	}
 
-	public void setEntrada_ponto(LocalDateTime entrada_ponto) {
-		this.entrada_ponto = entrada_ponto;
+	public void setEntradaPonto(LocalDateTime entradaPonto) {
+		this.entradaPonto = entradaPonto;
 	}
 
-	public LocalDateTime getSaida_ponto() {
-		return saida_ponto;
+	public LocalDateTime getSaidaPonto() {
+		return saidaPonto;
 	}
 
-	public void setSaida_ponto(LocalDateTime saida_ponto) {
-		this.saida_ponto = saida_ponto;
+	public void setSaidaPonto(LocalDateTime saidaPonto) {
+		this.saidaPonto = saidaPonto;
 	}
 
-	@Transient
-	public String data_saida_converted;
-
-	@Transient
-	public String data_entrada_converted;
-
-	public String getData_saida_converted() {
-		return data_saida_converted;
+	public String getDataEntradaConverted() {
+		return dataEntradaConverted;
 	}
 
-	public void setData_saida_converted(String data_saida_converted) {
-		this.data_saida_converted = data_saida_converted;
+	public void setDataEntradaConverted(String dataEntradaConverted) {
+		this.dataEntradaConverted = dataEntradaConverted;
 	}
 
-	public String getData_entrada_converted() {
-		return data_entrada_converted;
+	public String getDataSaidaConverted() {
+		return dataSaidaConverted;
 	}
 
-	public void setData_entrada_converted(String data_entrada_converted) {
-		this.data_entrada_converted = data_entrada_converted;
-	}
-
-	public Funcionario getFuncionario_id() {
-		return funcionario_id;
-	}
-
-	public void setFuncionario_id(Funcionario funcionario_id) {
-		this.funcionario_id = funcionario_id;
+	public void setDataSaidaConverted(String dataSaidaConverted) {
+		this.dataSaidaConverted = dataSaidaConverted;
 	}
 }
